@@ -1,16 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Hero } from './components/Hero';
-import { About } from './components/About';
-import { Team } from './components/Team';
-import { Gallery } from './components/Gallery';
-import { Blog } from './components/Blog';
-import { Contact } from './components/Contact';
-import { Chatbot } from './components/Chatbot';
-import { CustomCursor } from './components/CustomCursor';
-import { Page } from './types';
-import { FRESHA_LINK, GALLERY, BLOG_POSTS, REVIEWS, GOOGLE_REVIEWS_LINK } from './constants';
+import { Hero } from './components/Hero.tsx';
+import { About } from './components/About.tsx';
+import { Team } from './components/Team.tsx';
+import { Gallery } from './components/Gallery.tsx';
+import { Blog } from './components/Blog.tsx';
+import { Contact } from './components/Contact.tsx';
+import { Chatbot } from './components/Chatbot.tsx';
+import { CustomCursor } from './components/CustomCursor.tsx';
+import { Page } from './types.ts';
+import { FRESHA_LINK, GALLERY, BLOG_POSTS, REVIEWS, GOOGLE_REVIEWS_LINK } from './constants.tsx';
 import { Star, ExternalLink, ArrowRight } from 'lucide-react';
 
 const Navbar: React.FC<{ currentPage: Page, onNavigate: (page: Page) => void }> = ({ currentPage, onNavigate }) => {
@@ -30,17 +29,14 @@ const Navbar: React.FC<{ currentPage: Page, onNavigate: (page: Page) => void }> 
     >
       <div 
         onClick={() => onNavigate('home')}
-        className="pointer-events-auto cursor-pointer group"
+        className="cursor-pointer group"
       >
-        <motion.span 
-          whileHover={{ scale: 1.02 }}
-          className="text-xl md:text-2xl font-serif tracking-[0.2em] text-[#D4AF37]"
-        >
+        <span className="text-xl md:text-2xl font-serif tracking-[0.2em] text-[#D4AF37]">
           AURUM <span className="text-white opacity-80 group-hover:opacity-100 transition-opacity">STUDIO</span>
-        </motion.span>
+        </span>
       </div>
 
-      <div className="hidden lg:flex gap-10 pointer-events-auto items-center">
+      <div className="hidden lg:flex gap-10 items-center">
         {navItems.map(item => (
           <button
             key={item.id}
@@ -55,16 +51,14 @@ const Navbar: React.FC<{ currentPage: Page, onNavigate: (page: Page) => void }> 
         ))}
       </div>
 
-      <div className="flex items-center gap-4 pointer-events-auto">
-        <a 
-          href={FRESHA_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-5 py-2 border border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-[#D4AF37] hover:text-[#2E2E2E] transition-all duration-300 rounded-sm"
-        >
-          Book Now
-        </a>
-      </div>
+      <a 
+        href={FRESHA_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="px-5 py-2 border border-[#D4AF37] text-[#D4AF37] text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-[#D4AF37] hover:text-[#2E2E2E] transition-all duration-300 rounded-sm"
+      >
+        Book Now
+      </a>
     </motion.nav>
   );
 };
@@ -80,7 +74,7 @@ const Footer: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }) 
         ))}
       </div>
       <p className="text-white/20 text-[9px] tracking-[0.4em] uppercase">
-        © {new Date().getFullYear()} Aurum Studio. Developed for Premium Excellence.
+        © {new Date().getFullYear()} Aurum Studio. High Excellence Beauty.
       </p>
     </div>
   </footer>
@@ -88,10 +82,17 @@ const Footer: React.FC<{ onNavigate: (page: Page) => void }> = ({ onNavigate }) 
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [currentPage]);
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage, isMounted]);
 
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
@@ -109,50 +110,49 @@ const App: React.FC = () => {
     }
   };
 
+  // Prevent rendering before hydration to avoid window errors
+  if (!isMounted) return <div className="min-h-screen bg-[#2E2E2E]" />;
+
   return (
     <div className="relative min-h-screen bg-[#2E2E2E] selection:bg-[#D4AF37] selection:text-[#2E2E2E]">
       <CustomCursor />
-      
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
       <AnimatePresence mode="wait">
         <motion.div
           key={currentPage}
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.02 }}
-          transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
           {renderPage()}
           
           {currentPage === 'home' && (
-            <>
-              {/* Home - About Section */}
-              <div className="py-20 border-t border-white/5">
-                <About />
-              </div>
-
-              {/* Home - Gallery Highlight */}
+            <div className="bg-[#2E2E2E]">
+              <About />
+              
+              {/* Home Gallery Preview with Safeties */}
               <div className="py-24 bg-[#252525]">
                 <div className="max-w-7xl mx-auto px-6">
                   <div className="flex justify-between items-end mb-12">
                     <div>
                       <h2 className="text-sm uppercase tracking-[0.5em] text-[#D4AF37] mb-4">Portfolio</h2>
-                      <h3 className="text-4xl font-serif">Our Best Styles</h3>
+                      <h3 className="text-4xl font-serif">Featured Work</h3>
                     </div>
                     <button 
                       onClick={() => handleNavigate('gallery')}
                       className="text-[#D4AF37] text-xs uppercase tracking-[0.2em] flex items-center gap-2 group border-b border-[#D4AF37]/30 pb-1"
                     >
-                      Explore Gallery <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      View More <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {GALLERY.slice(0, 4).map((img, idx) => (
+                    {(GALLERY || []).slice(0, 4).map((img, idx) => (
                       <motion.div 
                         key={idx} 
-                        whileHover={{ y: -10 }}
-                        className="aspect-square rounded-lg overflow-hidden shadow-2xl"
+                        whileHover={{ y: -5 }}
+                        className="aspect-square rounded-lg overflow-hidden shadow-2xl bg-[#3A3A3A]"
                       >
                         <img src={img.url} alt={img.alt} className="w-full h-full object-cover transition-transform duration-700 hover:scale-110" />
                       </motion.div>
@@ -161,18 +161,15 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Home - Team Section */}
-              <div className="py-20 bg-black/10">
-                <Team />
-              </div>
+              <Team />
 
-              {/* Home - Blog Highlight */}
+              {/* Home Blog Preview with Safeties */}
               <div className="py-24 bg-[#2E2E2E]">
                 <div className="max-w-7xl mx-auto px-6">
                    <div className="flex justify-between items-end mb-12">
                     <div>
                       <h2 className="text-sm uppercase tracking-[0.5em] text-[#D4AF37] mb-4">Latest</h2>
-                      <h3 className="text-4xl font-serif">The Beauty Blog</h3>
+                      <h3 className="text-4xl font-serif">The Journal</h3>
                     </div>
                     <button 
                       onClick={() => handleNavigate('blog')}
@@ -182,14 +179,14 @@ const App: React.FC = () => {
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                    {BLOG_POSTS.slice(0, 3).map((post, idx) => (
+                    {(BLOG_POSTS || []).slice(0, 3).map((post, idx) => (
                       <div 
                         key={idx} 
                         className="group cursor-pointer" 
                         onClick={() => handleNavigate('blog')}
                       >
-                        <div className="aspect-[16/10] mb-6 overflow-hidden rounded-sm grayscale group-hover:grayscale-0 transition-all duration-500 shadow-xl">
-                          <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div className="aspect-[16/10] mb-6 overflow-hidden rounded-lg bg-[#3A3A3A]">
+                          <img src={post.image} alt={post.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                         </div>
                         <h4 className="text-xl font-serif mb-3 text-white group-hover:text-[#D4AF37] transition-colors">{post.title}</h4>
                         <p className="text-white/40 text-sm line-clamp-2 font-light leading-relaxed">{post.excerpt}</p>
@@ -199,50 +196,36 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Home - Reviews Section */}
+              {/* Home Reviews with Safeties */}
               <div className="py-24 bg-black/20">
                 <div className="max-w-7xl mx-auto px-6">
                   <div className="text-center mb-16">
                     <h2 className="text-sm uppercase tracking-[0.5em] text-[#D4AF37] mb-4">Testimonials</h2>
-                    <h3 className="text-4xl md:text-5xl font-serif mb-6">Client Love</h3>
+                    <h3 className="text-4xl md:text-5xl font-serif mb-6">Client Experience</h3>
                     <div className="flex justify-center gap-1.5">
                       {[...Array(5)].map((_, i) => <Star key={i} size={18} className="fill-[#D4AF37] text-[#D4AF37]" />)}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    {REVIEWS.map((review, idx) => (
+                    {(REVIEWS || []).map((review, idx) => (
                       <motion.div 
                         key={idx} 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.1 }}
                         viewport={{ once: true }}
-                        className="bg-[#3A3A3A] p-10 rounded-lg border border-white/5 shadow-2xl relative"
+                        className="bg-[#3A3A3A] p-10 rounded-lg border border-white/5 shadow-2xl"
                       >
-                        <div className="flex gap-1 mb-6">
-                          {[...Array(review.rating)].map((_, i) => <Star key={i} size={14} className="fill-[#D4AF37] text-[#D4AF37]" />)}
-                        </div>
-                        <p className="text-white/80 italic mb-8 leading-relaxed font-light">"{review.text}"</p>
+                        <p className="text-white/80 italic mb-8 font-light">"{review.text}"</p>
                         <div className="flex justify-between items-center border-t border-white/5 pt-6">
                           <span className="font-semibold text-sm tracking-widest uppercase">{review.name}</span>
-                          <span className="text-white/20 text-[10px] uppercase tracking-widest">{review.date}</span>
+                          <span className="text-white/20 text-[10px] uppercase">{review.date}</span>
                         </div>
                       </motion.div>
                     ))}
                   </div>
-                  <div className="text-center mt-16">
-                    <a 
-                      href={GOOGLE_REVIEWS_LINK}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-3 text-[#D4AF37] text-xs uppercase tracking-[0.3em] hover:text-white transition-all group"
-                    >
-                      Verified Google Reviews <ExternalLink size={14} className="group-hover:translate-y-[-2px] transition-transform" />
-                    </a>
-                  </div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </motion.div>
       </AnimatePresence>

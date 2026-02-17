@@ -1,41 +1,39 @@
-
 import { GoogleGenAI } from "@google/genai";
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 const SYSTEM_INSTRUCTION = `
 You are the assistant for AURUM STUDIO, a premium salon in Rajagiriya, Sri Lanka.
-Your tone is friendly, polite, and helpful.
+Your tone is friendly, polite, and professional.
 
 Location: 121, 1 Parliament Rd, Rajagiriya.
 Phone: +94 77 751 2222
 Email: aurumstudioslk@gmail.com
 
-You handle questions about:
-- Services: Hair styling, skin care, makeup, nails, and grooming.
-- Booking: Tell users to click the "Book Now" button or visit our Fresha page.
-- Location: We are located in Rajagiriya at 121, 1 Parliament Rd.
+Services: Hair styling, skin care, makeup, nails, and grooming.
+Booking: Instruct users to click the "Book Now" button on our website.
 
 RULES:
-- Use clear, simple English. Avoid fancy words like "bespoke".
-- Keep replies under 60 words.
+- Use clear, professional English.
+- Keep replies under 75 words.
 - Be warm and welcoming.
 `;
 
 export async function getChatResponse(prompt: string) {
   try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: prompt,
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
-        maxOutputTokens: 100,
+        maxOutputTokens: 200,
         temperature: 0.7,
       },
     });
-    return response.text || "I'm sorry, I can't answer that right now. Please call us at +94 77 751 2222.";
+    
+    // SDK Correct usage: .text property
+    return response.text || "I'm sorry, I'm having a bit of trouble right now. Please call us at +94 77 751 2222.";
   } catch (error) {
-    console.error("Gemini Error:", error);
-    return "Thank you for message. Please call our studio at +94 77 751 2222 for help.";
+    console.error("Gemini Assistant Error:", error);
+    return "Thank you for reaching out. For immediate assistance, please call Aurum Studio at +94 77 751 2222.";
   }
 }
